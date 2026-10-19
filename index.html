@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#fffaf2" />
+  <title>今天吃什麼？｜你的每日美食靈感</title>
+  <style>
+    :root { --ink:#253d32; --muted:#728077; --paper:#fffaf2; --white:#fff; --green:#2c674a; --mint:#e7f2e5; --coral:#f6a181; --line:#e8e8de; --shadow:0 18px 45px rgba(53,70,43,.09); }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); font-family:ui-sans-serif,system-ui,-apple-system,"Noto Sans TC","Microsoft JhengHei",sans-serif; background:radial-gradient(circle at 3% 10%,#ffedd9 0,transparent 26%),radial-gradient(circle at 98% 15%,#e8f2d9 0,transparent 29%),var(--paper); min-height:100vh; }
+    button,select,input { font:inherit; }
+    button { cursor:pointer; }
+    button:focus-visible,select:focus-visible,input:focus-visible { outline:3px solid #edaa73; outline-offset:3px; }
+    .shell { width:min(1120px,calc(100% - 36px)); margin:auto; }
+    header { display:flex; align-items:center; justify-content:space-between; padding:26px 0 10px; gap:12px; }
+    .logo { display:flex; align-items:center; gap:10px; font-weight:900; font-size:19px; letter-spacing:.03em; }
+    .logo-icon { display:grid; place-items:center; height:40px; width:40px; background:#f8d5a6; border-radius:15px; font-size:24px; transform:rotate(-8deg); }
+    .pill-note { border:1px solid #cddfcf; border-radius:30px; background:#ffffffb5; padding:8px 14px; color:var(--green); font-size:12px; font-weight:750; }
+    .hero { text-align:center; padding:48px 10px 35px; }
+    .kicker { display:inline-block; border-radius:40px; padding:7px 13px; background:#ffebd6; color:#98582f; font-size:13px; font-weight:800; }
+    h1 { margin:14px 0 12px; font-size:clamp(38px,6vw,66px); line-height:1.15; letter-spacing:-.065em; }
+    h1 span { color:var(--green); }
+    .hero p { margin:0; color:var(--muted); font-size:16px; line-height:1.8; }
+    .main-grid { display:grid; grid-template-columns:minmax(300px,.94fr) minmax(300px,1.06fr); gap:22px; align-items:start; }
+    .panel { background:var(--white); border:1px solid #f1efe8; border-radius:25px; box-shadow:var(--shadow); padding:26px; }
+    h2 { font-size:20px; margin:0 0 8px; }
+    .sub { color:var(--muted); font-size:13px; margin:0 0 25px; line-height:1.6; }
+    .field { margin:20px 0; }
+    .field-label { display:block; font-size:14px; font-weight:850; margin-bottom:11px; }
+    .choices { display:flex; flex-wrap:wrap; gap:8px; }
+    .choice { border:1px solid #dce7da; color:#54665a; background:#fff; border-radius:13px; padding:10px 15px; font-size:14px; font-weight:700; transition:.15s ease; }
+    .choice:hover { border-color:var(--green); }
+    .choice[aria-pressed="true"] { border-color:var(--green); background:var(--mint); color:var(--green); box-shadow:inset 0 0 0 1px var(--green); }
+    select { width:100%; border-radius:13px; border:1px solid #dce7da; background:#fff; padding:12px 14px; color:var(--ink); }
+    .checkrow { display:flex; align-items:center; gap:10px; font-size:14px; margin-top:10px; color:#4f6055; }
+    .checkrow input { accent-color:var(--green); width:17px; height:17px; }
+    .primary { border:0; border-radius:16px; padding:15px 19px; width:100%; color:#fff; background:var(--green); font-size:17px; font-weight:850; box-shadow:0 10px 22px #2c674a30; transition:transform .18s,background .18s; }
+    .primary:hover { transform:translateY(-2px); background:#22553d; }
+    .tiny { font-size:12px; color:var(--muted); line-height:1.6; }
+    .result-panel { min-height:535px; display:flex; flex-direction:column; }
+    .result-top { display:flex; justify-content:space-between; gap:10px; align-items:center; margin-bottom:18px; }
+    .round-label { font-size:12px; font-weight:850; color:#aa694b; background:#fff0e6; border-radius:20px; padding:7px 11px; }
+    .meal-art { position:relative; background:linear-gradient(135deg,#f9d7ab,#f8eac6 56%,#e5f1cd); min-height:220px; display:grid; place-items:center; border-radius:21px; overflow:hidden; }
+    .meal-art::before,.meal-art::after { content:''; position:absolute; width:230px; height:230px; background:#ffffff49; border-radius:50%; left:-85px; top:-100px; }
+    .meal-art::after { width:190px; height:190px; left:auto; top:auto; bottom:-115px; right:-60px; }
+    .meal-art .emoji { font-size:clamp(90px,12vw,128px); filter:drop-shadow(0 12px 7px #ad8f6f35); transform:rotate(-8deg); position:relative; z-index:1; user-select:none; }
+    .sparkle { position:absolute; font-size:24px; top:20%; right:20%; }
+    .dish-name { margin:22px 0 8px; font-size:29px; letter-spacing:-.035em; }
+    .dish-desc { color:#738278; line-height:1.7; font-size:14px; margin:0; }
+    .tags { display:flex; flex-wrap:wrap; gap:8px; margin:17px 0 22px; }
+    .tag { background:#f1f5ee; border-radius:10px; padding:7px 10px; font-size:12px; color:#53735b; font-weight:800; }
+    .result-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:auto; }
+    .secondary { border:1px solid #d8e4d9; background:white; color:var(--green); border-radius:14px; padding:13px; font-weight:850; }
+    .secondary:hover { background:#f1f8ef; }
+    .notice { background:#fff4e8; border:1px solid #f5dcc3; color:#8a674d; padding:12px 14px; border-radius:12px; font-size:13px; line-height:1.65; margin-top:14px; }
+    .bottom { display:grid; grid-template-columns:1fr 1fr; gap:22px; margin:22px 0 55px; }
+    .box-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:15px; }
+    .box-heading h2 { margin:0; font-size:19px; }
+    .smallbtn { padding:7px 11px; border:0; background:#f2f5ef; border-radius:10px; color:#587362; font-size:12px; font-weight:800; }
+    .saved-list { display:grid; gap:9px; }
+    .saved-item { background:#f8faf6; border-radius:12px; display:flex; align-items:center; gap:12px; padding:11px 12px; }
+    .saved-item .food-emoji { font-size:24px; }
+    .saved-item strong { display:block; font-size:14px; }
+    .avoid-input { width:100%; box-sizing:border-box; border:1px solid #dce4dc; border-radius:12px; padding:13px 14px; font:inherit; color:var(--ink); background:white; outline-offset:3px; }
+    .avoid-input:focus { border-color:#5a9975; }
+    .help-text { font-size:12px; color:var(--muted); line-height:1.7; margin:7px 0 0; }
+    .saved-item small { color:var(--muted); font-size:12px; }
+    .saved-item button { margin-left:auto; border:0; background:white; border-radius:8px; font-size:13px; color:#8c766b; padding:7px 9px; }
+    .empty { color:#8a958b; background:#f8faf6; padding:22px 15px; border-radius:13px; text-align:center; line-height:1.6; font-size:13px; }
+    footer { color:#92a096; text-align:center; font-size:12px; padding:0 0 30px; }
+    @media(max-width:780px) { .main-grid,.bottom { grid-template-columns:1fr; } .hero { padding-top:30px; } .result-panel { min-height:0; } }
+    @media(max-width:440px) { .panel { padding:20px; } .shell { width:calc(100% - 24px); } .pill-note { display:none; } .choice { padding:9px 11px; font-size:13px; } .result-actions { grid-template-columns:1fr; } }
+    @media(prefers-reduced-motion:reduce) { *,*::before,*::after { transition:none !important; animation:none !important; } }
+  </style>
+</head>
+<body>
+<div class="shell">
+  <header><div class="logo"><span class="logo-icon">🍳</span> 吃什麼研究所</div><div class="pill-note">✦ 幫選擇困難症找到答案</div></header>
+  <section class="hero"><span class="kicker">🍽️ 每天都值得吃點好的</span><h1>今天<span>吃什麼</span>？</h1><p>三餐都想不到要吃什麼？告訴我你的心情與預算，<br>讓美食靈感幫你做決定！</p></section>
+  <main>
+    <div class="main-grid">
+      <section class="panel" aria-labelledby="form-title">
+        <h2 id="form-title">🥑 今天想吃點什麼？</h2><p class="sub">選好條件，按下按鈕就幫你抽出一道料理！</p>
+        <div class="field"><label class="field-label">① 現在是哪一餐？</label><div class="choices" id="meal-options" role="group" aria-label="選擇餐別"><button type="button" class="choice" data-value="早餐" aria-pressed="false">☀️ 早餐</button><button type="button" class="choice" data-value="午餐" aria-pressed="true">🍚 午餐</button><button type="button" class="choice" data-value="晚餐" aria-pressed="false">🌙 晚餐</button></div></div>
+        <div class="field"><label class="field-label" for="budget">② 今天的預算</label><select id="budget"><option value="100">100 元以下</option><option value="150">150 元以下</option><option value="250">250 元以下</option><option value="400">400 元以下</option><option value="500-1000">500～1000 元</option><option value="any" selected>不限預算</option></select></div>
+        <div class="field"><label class="field-label">③ 想吃什麼風格？</label><div class="choices" id="cuisine-options" role="group" aria-label="選擇料理風格"><button type="button" class="choice" data-value="全部" aria-pressed="true">🎲 都可以</button><button type="button" class="choice" data-value="台式" aria-pressed="false">🍜 台式</button><button type="button" class="choice" data-value="日式" aria-pressed="false">🍣 日式</button><button type="button" class="choice" data-value="韓式" aria-pressed="false">🥘 韓式</button><button type="button" class="choice" data-value="西式" aria-pressed="false">🍝 西式</button><button type="button" class="choice" data-value="輕食" aria-pressed="false">🥗 輕食</button></div></div>
+        <div class="field"><span class="field-label">④ 飲食小偏好</span><label class="checkrow"><input type="checkbox" id="vegetarian"> 只推薦蛋奶素／蔬食料理</label><label class="checkrow"><input type="checkbox" id="avoidSpicy"> 不吃辣</label></div>
+        <div class="field"><label class="field-label" for="avoidFood">⑤ 不吃的食物或食材</label><input class="avoid-input" id="avoidFood" type="text" placeholder="例如：牛肉、香菜、雞蛋" autocomplete="off" maxlength="200" aria-describedby="avoidHelp"><p class="help-text" id="avoidHelp">可輸入多項，以逗號、頓號或空格分開。會比對料理名稱及內建食材清單，自動排除符合項目。</p></div>
+        <button type="button" class="primary" id="pick">✨ 幫我決定今天吃什麼！</button>
+        <p class="tiny" style="text-align:center;margin:13px 0 0">料理、食材與價格均為示範資料；食材資訊不保證完整，食物過敏者仍須向店家確認。</p>
+      </section>
+      <section class="panel result-panel" aria-live="polite" aria-labelledby="result-title">
+        <div class="result-top"><h2 id="result-title">🎉 今天的美食靈感</h2><span class="round-label" id="state-label">等你來抽選</span></div>
+        <div class="meal-art"><span class="emoji" id="dish-emoji">🍱</span><span class="sparkle">✨</span></div>
+        <h3 class="dish-name" id="dish-name">準備好開飯了嗎？</h3>
+        <p class="dish-desc" id="dish-desc">選擇左側的偏好，點擊「幫我決定」，今天的煩惱就交給我吧！</p>
+        <div class="tags" id="dish-tags"><span class="tag">專治選擇困難</span><span class="tag">驚喜美食提案</span></div>
+        <div class="result-actions"><button type="button" class="secondary" id="again">🔄 再抽一次</button><button type="button" class="secondary" id="favorite">♡ 加入收藏</button></div>
+        <div class="notice" id="notice" role="status">💡 小提醒：預算與偏好條件會一起篩選。若找不到符合的料理，試著放寬條件吧！</div>
+      </section>
+    </div>
+    <div class="bottom">
+      <section class="panel"><div class="box-heading"><h2>❤️ 我的美食收藏</h2><button class="smallbtn" id="clear-favorites">清空收藏</button></div><div class="saved-list" id="favorites-list"></div></section>
+      <section class="panel"><div class="box-heading"><h2>🕘 最近抽到的料理</h2><button class="smallbtn" id="clear-history">清空紀錄</button></div><div class="saved-list" id="history-list"></div></section>
+    </div>
+  </main>
+  <footer>Made with ♡ and a little bit of hunger · 今天吃什麼？｜Vibe Coding Project</footer>
+</div>
+<script>
+  'use strict';
+  // 全部使用本地示範資料；不會呼叫 API，也不會上傳個人資訊。
+  const dishes = [
+    {id:1,name:'鮪魚蛋吐司',emoji:'🥪',meal:['早餐'],cuisine:'西式',price:65,veg:false,spicy:false,desc:'酥香吐司配上鮪魚和雞蛋，簡單又有飽足感。'},
+    {id:2,name:'飯糰配豆漿',emoji:'🍙',meal:['早餐'],cuisine:'台式',price:65,veg:true,spicy:false,desc:'經典台式早餐，米香和豆漿超搭。'},
+    {id:3,name:'蔬菜蛋餅',emoji:'🥞',meal:['早餐'],cuisine:'台式',price:55,veg:true,spicy:false,desc:'外皮香香脆脆，搭配新鮮蔬菜更有口感。'},
+    {id:4,name:'優格水果碗',emoji:'🥣',meal:['早餐'],cuisine:'輕食',price:120,veg:true,spicy:false,desc:'水果、優格與穀片的繽紛組合。'},
+    {id:5,name:'日式玉子燒套餐',emoji:'🍳',meal:['早餐'],cuisine:'日式',price:145,veg:true,spicy:false,desc:'柔軟玉子燒配上清爽小菜，慢慢享受早晨。'},
+    {id:6,name:'培根起司貝果',emoji:'🥯',meal:['早餐'],cuisine:'西式',price:110,veg:false,spicy:false,desc:'Q 彈貝果夾著濃郁起司與培根。'},
+    {id:7,name:'韓式蔬菜拌飯',emoji:'🍚',meal:['午餐','晚餐'],cuisine:'韓式',price:180,veg:true,spicy:true,desc:'滿滿蔬菜、米飯和韓式辣醬，拌一拌就開動。'},
+    {id:8,name:'滷肉飯套餐',emoji:'🍛',meal:['午餐','晚餐'],cuisine:'台式',price:110,veg:false,spicy:false,desc:'鹹香滷肉配熱騰騰白飯，熟悉的幸福滋味。'},
+    {id:9,name:'牛肉麵',emoji:'🍜',meal:['午餐','晚餐'],cuisine:'台式',price:200,veg:false,spicy:false,desc:'暖呼呼湯頭配上彈牙麵條，經典不敗。'},
+    {id:10,name:'雞肉便當',emoji:'🍱',meal:['午餐','晚餐'],cuisine:'台式',price:125,veg:false,spicy:false,desc:'主食和配菜一次到位，是忙碌日子的好選擇。'},
+    {id:11,name:'日式咖哩飯',emoji:'🍛',meal:['午餐','晚餐'],cuisine:'日式',price:175,veg:false,spicy:false,desc:'濃郁微甜的日式咖哩，配飯最合適。'},
+    {id:12,name:'鮭魚丼飯',emoji:'🍣',meal:['午餐','晚餐'],cuisine:'日式',price:320,veg:false,spicy:false,desc:'鮮美鮭魚搭配醋飯，想犒賞自己就選這道。'},
+    {id:13,name:'豆皮烏龍麵',emoji:'🍲',meal:['午餐','晚餐'],cuisine:'日式',price:160,veg:true,spicy:false,desc:'滑順烏龍麵配上清甜豆皮，暖胃又舒服。'},
+    {id:14,name:'韓式豆腐鍋',emoji:'🥘',meal:['午餐','晚餐'],cuisine:'韓式',price:230,veg:false,spicy:true,desc:'熱呼呼的豆腐鍋，喜歡重口味時很適合。'},
+    {id:15,name:'韓式泡菜炒飯',emoji:'🍚',meal:['午餐','晚餐'],cuisine:'韓式',price:165,veg:false,spicy:true,desc:'香辣泡菜與米飯炒出誘人的鍋氣。'},
+    {id:16,name:'番茄義大利麵',emoji:'🍝',meal:['午餐','晚餐'],cuisine:'西式',price:190,veg:true,spicy:false,desc:'酸甜番茄醬裹著麵條，經典清爽。'},
+    {id:17,name:'奶油蘑菇燉飯',emoji:'🍄',meal:['午餐','晚餐'],cuisine:'西式',price:250,veg:true,spicy:false,desc:'奶香蘑菇和米飯的療癒組合。'},
+    {id:18,name:'烤雞凱薩沙拉',emoji:'🥗',meal:['午餐','晚餐'],cuisine:'輕食',price:195,veg:false,spicy:false,desc:'烤雞配生菜與濃郁醬汁，清爽也能滿足。'},
+    {id:19,name:'酪梨雞蛋三明治',emoji:'🥑',meal:['午餐','晚餐'],cuisine:'輕食',price:155,veg:true,spicy:false,desc:'酪梨搭配蛋香，適合想吃輕盈一點的日子。'},
+    {id:20,name:'蔬菜豆腐便當',emoji:'🍱',meal:['午餐','晚餐'],cuisine:'輕食',price:145,veg:true,spicy:false,desc:'豆腐與多樣蔬菜，吃起來清爽且有層次。'},
+    {id:21,name:'蔬食壽司',emoji:'🍣',meal:['午餐','晚餐'],cuisine:'日式',price:140,veg:true,spicy:false,desc:'用小黃瓜、玉子燒等食材組成的繽紛壽司。'},
+    {id:22,name:'蔥油拌麵',emoji:'🍜',meal:['午餐','晚餐'],cuisine:'台式',price:85,veg:true,spicy:false,desc:'簡單的蔥香和醬汁，拌出令人滿足的一餐。'},
+    {id:23,name:'起司蔬菜歐姆蛋',emoji:'🍳',meal:['早餐','午餐'],cuisine:'西式',price:135,veg:true,spicy:false,desc:'柔軟蛋皮裡包著起司與蔬菜。'},
+    {id:24,name:'石鍋牛肉拌飯',emoji:'🥘',meal:['午餐','晚餐'],cuisine:'韓式',price:240,veg:false,spicy:false,desc:'石鍋鍋巴香與牛肉搭配，吃到最後一口都滿足。'},
+    {id:25,name:'蔬菜粥',emoji:'🥣',meal:['早餐','晚餐'],cuisine:'台式',price:75,veg:true,spicy:false,desc:'清淡暖胃的蔬菜粥，適合想吃得簡單的時候。'},
+    {id:26,name:'韓式蔬菜煎餅',emoji:'🥞',meal:['午餐','晚餐'],cuisine:'韓式',price:160,veg:true,spicy:false,desc:'金黃酥脆的蔬菜煎餅，香氣十足。'},
+    {id:27,name:'南瓜濃湯佐麵包',emoji:'🥖',meal:['早餐','晚餐'],cuisine:'西式',price:140,veg:true,spicy:false,desc:'滑順的南瓜濃湯，配上麵包剛剛好。'},
+    {id:28,name:'鮮蔬飯糰',emoji:'🍙',meal:['早餐','午餐'],cuisine:'輕食',price:90,veg:true,spicy:false,desc:'方便又好吃的鮮蔬飯糰，外帶也合適。'},
+    {id:29,name:'和牛燒肉套餐',emoji:'🥩',meal:['午餐','晚餐'],cuisine:'日式',price:880,veg:false,spicy:false,desc:'香煎和牛配上米飯與精緻配菜，適合特別的一餐。'},
+    {id:30,name:'海鮮義大利麵套餐',emoji:'🍝',meal:['午餐','晚餐'],cuisine:'西式',price:650,veg:false,spicy:false,desc:'海鮮與義大利麵搭配沙拉及湯品的套餐。'},
+    {id:31,name:'韓式雙人烤肉套餐',emoji:'🥓',meal:['午餐','晚餐'],cuisine:'韓式',price:950,veg:false,spicy:false,desc:'烤肉與蔬菜配菜的分享套餐，價格以整份計。'},
+    {id:32,name:'精緻蔬食套餐',emoji:'🥗',meal:['午餐','晚餐'],cuisine:'輕食',price:580,veg:true,spicy:false,desc:'季節蔬菜、菇類及穀物組成的豐富套餐。'}
+  ];
+  // 料理的示範食材：用於「不吃的食物」排除，不代表實際店家的完整配方。
+  const ingredientMap = {
+    1:['鮪魚','魚','雞蛋','蛋','吐司','麵包','美乃滋'], 2:['米飯','米','飯糰','豆漿','黃豆','豆','菜脯'],
+    3:['蔬菜','高麗菜','雞蛋','蛋','麵粉','麵','蔥'],4:['優格','牛奶','乳製品','水果','穀片'],
+    5:['雞蛋','蛋','米飯','米','蔬菜','海苔','醬油'],6:['培根','豬肉','起司','乳製品','貝果','麵包'],
+    7:['蔬菜','米飯','米','辣椒','韓式辣醬','芝麻','豆芽'],8:['豬肉','滷肉','米飯','米','醬油','雞蛋','蛋'],
+    9:['牛肉','牛','麵條','麵','蔥','醬油'],10:['雞肉','雞','米飯','米','蔬菜','高麗菜'],
+    11:['咖哩','米飯','米','雞肉','雞','馬鈴薯','紅蘿蔔','洋蔥'],12:['鮭魚','魚','米飯','米','海苔','醋'],
+    13:['豆皮','黃豆','豆','烏龍麵','麵','蔥','醬油'],14:['豆腐','黃豆','豆','辣椒','韓式辣醬','海鮮','蛤蜊','雞蛋','蛋'],
+    15:['泡菜','辣椒','米飯','米','豬肉','雞蛋','蛋'],16:['番茄','義大利麵','麵','蒜','洋蔥'],
+    17:['蘑菇','菇','奶油','牛奶','乳製品','起司','米飯','米'],18:['雞肉','雞','生菜','蔬菜','起司','乳製品','麵包','鯷魚','魚'],
+    19:['酪梨','雞蛋','蛋','麵包','吐司'],20:['豆腐','黃豆','豆','蔬菜','米飯','米'],
+    21:['小黃瓜','雞蛋','蛋','玉子燒','米飯','米','海苔'],22:['蔥','麵條','麵','醬油'],
+    23:['雞蛋','蛋','起司','乳製品','蔬菜','牛奶'],24:['牛肉','牛','米飯','米','蔬菜','芝麻'],
+    25:['米飯','米','蔬菜','紅蘿蔔'],26:['蔬菜','蔥','麵粉','麵','雞蛋','蛋'],
+    27:['南瓜','牛奶','奶油','乳製品','麵包'],28:['米飯','米','蔬菜','海苔'],29:['和牛','牛肉','牛','米飯','米','蔬菜'],30:['海鮮','蝦','蛤蜊','義大利麵','麵','奶油'],31:['牛肉','牛','豬肉','蔬菜','生菜','芝麻'],32:['蔬菜','菇','穀物','米飯','米']
+  };
+  // 支援常見同義詞；例如「蛋」可以比對「雞蛋」，「菇」可以比對「蘑菇」。
+  const $ = id => document.getElementById(id);
+  const keyFav='meal-picker-favorites-v1',keyHistory='meal-picker-history-v1';
+  function readStorage(key) { try { const data=JSON.parse(localStorage.getItem(key)); return Array.isArray(data)?data.filter(Number.isInteger):[]; } catch { return []; } }
+  function writeStorage(key,value) { try { localStorage.setItem(key,JSON.stringify(value)); } catch { /* 私密模式停用儲存時仍可抽選 */ } }
+  let favorites=readStorage(keyFav), history=readStorage(keyHistory), current=null, meal='午餐', cuisine='全部';
+  function setupChoices(group,callback) { $(group).addEventListener('click',e=>{ const btn=e.target.closest('button[data-value]'); if(!btn)return; for(const child of $(group).querySelectorAll('button'))child.setAttribute('aria-pressed',String(child===btn)); callback(btn.dataset.value); }); }
+  setupChoices('meal-options',v=>{meal=v;}); setupChoices('cuisine-options',v=>{cuisine=v;});
+  function avoidedTerms() {
+    return [...new Set($('avoidFood').value.split(/[，,、;；\s\n]+/).map(s=>s.trim().toLowerCase()).filter(Boolean))];
+  }
+  function containsAvoidedFood(d,terms) {
+    const fields=[d.name,...(ingredientMap[d.id]||[])].map(s=>s.toLowerCase());
+    return terms.some(term=>fields.some(field=>field.includes(term)));
+  }
+  function eligible() {
+    const budget=$('budget').value,veg=$('vegetarian').checked,noSpicy=$('avoidSpicy').checked,terms=avoidedTerms();
+    return dishes.filter(d=>d.meal.includes(meal)&&(cuisine==='全部'||d.cuisine===cuisine)&&(budget==='any'||(budget==='500-1000'?(d.price>=500&&d.price<=1000):d.price<=Number(budget)))&&(!veg||d.veg)&&(!noSpicy||!d.spicy)&&!containsAvoidedFood(d,terms));
+  }
+  function showDish(d) { current=d; $('dish-emoji').textContent=d.emoji; $('dish-name').textContent=d.name; $('dish-desc').textContent=d.desc; $('dish-tags').replaceChildren(); [d.cuisine,'約 NT$'+d.price,d.veg?'蛋奶素／蔬食':'一般飲食',d.spicy?'含辣味':'不辣'].forEach(t=>{let span=document.createElement('span');span.className='tag';span.textContent=t;$('dish-tags').append(span);}); $('state-label').textContent='✨ 抽選成功'; $('favorite').textContent=favorites.includes(d.id)?'♥ 已收藏':'♡ 加入收藏'; }
+  function pickDish(){const pool=eligible(); if(!pool.length){current=null;$('dish-emoji').textContent='🔎';$('dish-name').textContent='找不到符合的料理';$('dish-desc').textContent='請調整篩選條件後重新抽選。';$('dish-tags').replaceChildren();$('favorite').textContent='♡ 加入收藏';$('state-label').textContent='無符合料理';$('notice').textContent='🥺 沒有符合條件的料理。請調高預算、調整餐別或料理類型，或減少排除食材。';return;} const candidates=pool.length>1?pool.filter(d=>d.id!==current?.id):pool; const item=candidates[Math.floor(Math.random()*candidates.length)]; showDish(item); history=[item.id,...history].slice(0,8);writeStorage(keyHistory,history);renderLists();$('notice').textContent='💚 不喜歡這道？可以再抽一次！找到喜歡的料理記得收藏。';}
+  function makeItem(id,kind){ const d=dishes.find(x=>x.id===id);if(!d)return null;const row=document.createElement('div');row.className='saved-item';const emoji=document.createElement('span');emoji.className='food-emoji';emoji.textContent=d.emoji; const info=document.createElement('div');const strong=document.createElement('strong');strong.textContent=d.name;const small=document.createElement('small');small.textContent=`${d.cuisine} · 約 NT$${d.price}`;info.append(strong,small);const button=document.createElement('button');button.type='button';button.textContent=kind==='favorites'?'移除':'看看';button.setAttribute('aria-label',(kind==='favorites'?'移除收藏 ':'查看 ')+d.name);button.addEventListener('click',()=>{if(kind==='favorites'){favorites=favorites.filter(n=>n!==id);writeStorage(keyFav,favorites);renderLists();if(current?.id===id)$('favorite').textContent='♡ 加入收藏';}else{showDish(d);}});row.append(emoji,info,button);return row; }
+  function renderOne(listId,ids,kind,msg){const list=$(listId);list.replaceChildren();const valid=[...new Set(ids)].filter(id=>dishes.some(d=>d.id===id));if(!valid.length){const el=document.createElement('div');el.className='empty';el.textContent=msg;list.append(el);}else for(const id of valid){const row=makeItem(id,kind);if(row)list.append(row);}}
+  function renderLists(){renderOne('favorites-list',favorites,'favorites','還沒有收藏料理，抽到喜歡的就按愛心吧！');renderOne('history-list',history,'history','尚無抽選紀錄，快來抽一餐！');}
+  $('pick').addEventListener('click',pickDish);$('again').addEventListener('click',pickDish);
+  $('favorite').addEventListener('click',()=>{if(!current){$('notice').textContent='💡 請先抽出一道料理，再加入收藏喔！';return;}if(favorites.includes(current.id)){favorites=favorites.filter(x=>x!==current.id);}else{favorites=[current.id,...favorites];}writeStorage(keyFav,favorites);$('favorite').textContent=favorites.includes(current.id)?'♥ 已收藏':'♡ 加入收藏';renderLists();});
+  $('clear-favorites').addEventListener('click',()=>{if(!favorites.length)return;if(confirm('確定要清空所有美食收藏嗎？')){favorites=[];writeStorage(keyFav,favorites);renderLists();if(current)$('favorite').textContent='♡ 加入收藏';}});
+  $('clear-history').addEventListener('click',()=>{if(!history.length)return;if(confirm('確定要清空最近抽選紀錄嗎？')){history=[];writeStorage(keyHistory,history);renderLists();}});
+  renderLists();
+</script>
+</body>
+</html>
